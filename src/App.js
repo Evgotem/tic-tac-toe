@@ -32,6 +32,11 @@ class App extends React.Component {
       }, 100);
    };
 
+   resultMessage = message => {
+      setTimeout(() => {
+         alert(message);
+      }, 50);
+   }
 
    isWinner = () => {
       let token = this.state.count % 2 === 0 ? "X" : "0";
@@ -42,7 +47,7 @@ class App extends React.Component {
             this.state.squares[line[1]] === token &&
             this.state.squares[line[2]] === token
          ) {
-            alert(token + " won!");
+            this.resultMessage(token + " won!");
             this.resetGame();
             return true;
          }
@@ -51,8 +56,9 @@ class App extends React.Component {
    };
 
    isDraw = () => {
-      if (this.state.count === this.victoryLines.length && !this.isWinner) {
-         alert("Draw");
+
+      if (this.state.count === this.state.squares.length-1 && !this.isWinner) {
+         this.resultMessage("Draw");
          this.resetGame();
       }
    };
