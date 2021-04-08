@@ -11,6 +11,7 @@ class App extends React.Component {
          count: 0,
          tokenX: 0,
          token0: 0,
+         stepCount: 0
       };
       // победные комбинации
       this.victoryLines = [
@@ -24,7 +25,7 @@ class App extends React.Component {
          [2, 4, 6],
       ];
    }
-
+   // обнуление игры
    resetGame = () => {
       setTimeout(() => {
          this.setState({ squares: Array(9).fill(null) });
@@ -37,7 +38,7 @@ class App extends React.Component {
          alert(message);
       }, 50);
    }
-
+   //  проверка на победу
    isWinner = () => {
       let token = this.state.count % 2 === 0 ? "X" : "0";
       for (let i = 0; i < this.victoryLines.length; i++) {
@@ -49,20 +50,21 @@ class App extends React.Component {
          ) {
             this.resultMessage(token + " won!");
             this.resetGame();
+            // увеличиваем счетчик у Х или 0 если была победа
+            (token === 'X') ? this.setState({tokenX: this.state.tokenX+1}) : this.setState({token0: this.state.token0+1});
             return true;
          }
       }
       return false;
    };
-
+   // проверка на ничью
    isDraw = () => {
-
-      if (this.state.count === this.state.squares.length-1 && !this.isWinner) {
+      if (this.state.count === this.state.squares.length-1 && !this.isWinner()) {
          this.resultMessage("Draw");
          this.resetGame();
       }
    };
-
+   // отлавливаем клик по полю
    clickHandler = (event) => {
       // получаем номер элемента, по которому кликнули
       let data = event.target.getAttribute("data");
@@ -71,12 +73,17 @@ class App extends React.Component {
       // проверка на наличие введенного знака х или 0 в квадрате
       if (currentSquares[data] === null) {
          // меняем значение элемента на который кликнули
-         currentSquares[data] = this.state.count % 2 === 0 ? "X" : "0";
+         if(this.state.stepCount % 2 === 0){
+            currentSquares[data] = this.state.count % 2 === 0 ? "X" : "0";
+         } else {
+            currentSquares[data] = this.state.count % 2 === 0 ? "0" : "X";
+         }
          // увеличиваем счетчик на 1
          this.setState({ count: this.state.count + 1 });
          // перезаписываем измененный массив в state
          this.setState({ squares: currentSquares });
       }
+      console.log(this.isWinner());
       // проверка на победу;
       this.isWinner();
       // проверка на ничью
@@ -87,10 +94,18 @@ class App extends React.Component {
       this.resetGame();
    }
 
+   stepCountIncrease = () => {
+      this.setState({stepCount: this.state.stepCount+1});
+   }
+
    render() {
       return (
 
         <div className='app-wrapper'>
+           <div className='scores'>Счет:<br/>
+               <b>X</b>: {this.state.tokenX}<br/>
+               <b>0</b>: {this.state.token0}
+            </div>
             <div className="tic-tac-toe">
                <div className="ttt-grid" onClick={this.clickHandler} data="0">
                   {this.state.squares[0]}
@@ -123,6 +138,11 @@ class App extends React.Component {
             <button className='new-game-btn' onClick={this.startNewGame}>
                Новая игра
             </button>
+            <div className='btn-wrapper'>Первыми ходят:  
+               <button className='stepCountBtn' onClick={this.stepCountIncrease}>
+                  {(this.state.stepCount % 2 === 0) ? 'X' : '0'}
+               </button>
+            </div>
         </div>
       );
    }

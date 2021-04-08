@@ -26,3 +26,16 @@
 .new-game-btn {
    cursor: pointer;
 }
+.scores {
+
+   font-size: 30px;
+}
+.stepCountBtn {
+   margin-left: 10px;
+   width: 30px;
+   height: 30px;
+   text-align: center;
+}
+.btn-wrapper{
+   margin-top: 15px;
+}
