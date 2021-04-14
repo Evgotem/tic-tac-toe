@@ -30,6 +30,8 @@ class App extends React.Component {
       setTimeout(() => {
          this.setState({ squares: Array(9).fill(null) });
          this.setState({ count: 0 });
+         this.setState({ stepCount : 0 });
+         document.querySelector('.stepCountBtn').removeAttribute('disabled');
       }, 100);
    };
 
@@ -40,7 +42,13 @@ class App extends React.Component {
    }
    //  проверка на победу
    isWinner = () => {
-      let token = this.state.count % 2 === 0 ? "X" : "0";
+      let token;
+      // если изменили символ первого хода, то меняем токен
+      if (this.state.stepCount % 2 === 0){
+         token = this.state.count % 2 === 0 ? "X" : "0";
+      } else {
+         token = this.state.count % 2 === 0 ? "0" : "X";
+      }
       for (let i = 0; i < this.victoryLines.length; i++) {
          let line = this.victoryLines[i];
          if (
@@ -48,7 +56,7 @@ class App extends React.Component {
             this.state.squares[line[1]] === token &&
             this.state.squares[line[2]] === token
          ) {
-            this.resultMessage(token + " won!");
+            this.resultMessage(token + " победили!");
             this.resetGame();
             // увеличиваем счетчик у Х или 0 если была победа
             (token === 'X') ? this.setState({tokenX: this.state.tokenX+1}) : this.setState({token0: this.state.token0+1});
@@ -60,7 +68,7 @@ class App extends React.Component {
    // проверка на ничью
    isDraw = () => {
       if (this.state.count === this.state.squares.length-1 && !this.isWinner()) {
-         this.resultMessage("Draw");
+         this.resultMessage("Ничья");
          this.resetGame();
       }
    };
@@ -83,17 +91,21 @@ class App extends React.Component {
          // перезаписываем измененный массив в state
          this.setState({ squares: currentSquares });
       }
-      console.log(this.isWinner());
       // проверка на победу;
       this.isWinner();
       // проверка на ничью
       this.isDraw();
+      // кто ходит первым
+      if (this.state.squares.indexOf('X') || this.state.squares.indexOf('0')) {
+         document.querySelector('.stepCountBtn').setAttribute('disabled', 'disabled');
+      }
    };
 
    startNewGame = () => {
       this.resetGame();
    }
 
+   // кто ходит первым
    stepCountIncrease = () => {
       this.setState({stepCount: this.state.stepCount+1});
    }
@@ -102,7 +114,7 @@ class App extends React.Component {
       return (
 
         <div className='app-wrapper'>
-           <div className='scores'>Счет:<br/>
+           <div className='scores'><b>Счет:</b><br/>
                <b>X</b>: {this.state.tokenX}<br/>
                <b>0</b>: {this.state.token0}
             </div>
